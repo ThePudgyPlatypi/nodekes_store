@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# One-time system setup for the nodekes_store Magento 2.4.9 dev environment (WSL2 / Ubuntu 24.04).
+# One-time system setup for the web_store Magento 2.4.9 dev environment (WSL2 / Ubuntu 24.04).
 # Installs: PHP 8.5 (FPM) + Apache 2.4, MySQL 8.4 LTS, OpenSearch 3.x, Valkey 9, Composer.
-# Run with: sudo bash setup/01-system-setup.sh
+# Run with: sudo bash devsetup/01-system-setup.sh   (then run 02-magento-setup.sh as your normal user)
 set -euo pipefail
 
 DEV_USER="${SUDO_USER:-chris}"
 DEV_HOME="$(getent passwd "$DEV_USER" | cut -d: -f6)"
-PROJECT_DIR="$DEV_HOME/projects/nodekes_store"
-SITE_HOST="nodekes.test"
+PROJECT_DIR="$DEV_HOME/projects/web_store"
+SITE_HOST="web-store.test"
 PHP_V="8.5"
 VALKEY_V="9.1.2"
 VALKEY_SHA256="0d2a79936cbafa5f527a5175536bb17bd3f767f95f53529e59dddfacf762eec0"
-DB_NAME="nodekes"
-DB_USER="nodekes"
-SECRETS_FILE="$DEV_HOME/.config/nodekes/secrets.env"
+DB_NAME="web_store"
+DB_USER="web_store"
+SECRETS_FILE="$DEV_HOME/.config/web_store/secrets.env"
 
 [[ $EUID -eq 0 ]] || { echo "Run with sudo." >&2; exit 1; }
 export DEBIAN_FRONTEND=noninteractive
@@ -127,7 +127,7 @@ cat > /etc/apache2/sites-available/$SITE_HOST.conf <<EOF
 </VirtualHost>
 EOF
 # Bind IPv4 explicitly: with the default dual-stack `Listen 80`, WSL's localhost relay only
-# forwards [::1]:80 to Windows, so http://127.0.0.1 (and nodekes.test) fails from the browser.
+# forwards [::1]:80 to Windows, so http://127.0.0.1 (and web-store.test) fails from the browser.
 sed -i 's/^Listen 80$/Listen 0.0.0.0:80/' /etc/apache2/ports.conf
 a2dissite -q 000-default
 a2ensite -q $SITE_HOST
@@ -170,7 +170,7 @@ sysctl -q -w vm.max_map_count=262144
 OPENSEARCH_INITIAL_ADMIN_PASSWORD="$OPENSEARCH_INITIAL_ADMIN_PASSWORD" apt-get install -y opensearch
 
 cat > /etc/opensearch/opensearch.yml <<'EOF'
-cluster.name: nodekes-dev
+cluster.name: web-store-dev
 node.name: node-1
 path.data: /var/lib/opensearch
 path.logs: /var/log/opensearch
