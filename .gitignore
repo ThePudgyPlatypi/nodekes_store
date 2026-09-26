@@ -1,45 +1,46 @@
-#--------------------------#
-# Magento Default Files    #
-#--------------------------#
+#-----------------------------------------------------------------------------#
+# Magento 2 (Composer-based project)                                          #
+#                                                                             #
+# Whitelist approach: ignore everything at the root, then re-include only the #
+# files this project owns. Everything else is either generated at runtime     #
+# (generated/, var/, pub/static, pub/media) or deployed by `composer install` #
+# from magento/magento2-base (bin/, dev/, lib/, setup/, pub/index.php, the    #
+# root .htaccess, app/etc/di.xml, ...), so it doesn't belong in git.          #
+#-----------------------------------------------------------------------------#
 
-/PATCH_*.sh
+/*
 
-/app/etc/local.xml
+# ---- Project files ----------------------------------------------------------
+!/.gitignore
+!/LICENSE
+!/README.md
+!/composer.json
+!/composer.lock
+!/devsetup/
 
-/media/*
-!/media/.htaccess
+# ---- app/ : custom code, themes, translations, shared config ---------------
+!/app/
+/app/*
+!/app/code/
+!/app/design/
+!/app/i18n/
 
-!/media/customer
-/media/customer/*
-!/media/customer/.htaccess
+# app/etc: only config.php (module list + shared config) is committed.
+# env.php holds DB/cache credentials and is per-environment - never commit it.
+!/app/etc/
+/app/etc/*
+!/app/etc/config.php
 
-!/media/dhl
-/media/dhl/*
-!/media/dhl/logo.jpg
+# ---- Never commit, even if re-included above --------------------------------
+auth.json
+env.php
+*.log
+.env*
 
-!/media/downloadable
-/media/downloadable/*
-!/media/downloadable/.htaccess
-
-!/media/xmlconnect
-/media/xmlconnect/*
-
-!/media/xmlconnect/custom
-/media/xmlconnect/custom/*
-!/media/xmlconnect/custom/ok.gif
-
-!/media/xmlconnect/original
-/media/xmlconnect/original/*
-!/media/xmlconnect/original/ok.gif
-
-!/media/xmlconnect/system
-/media/xmlconnect/system/*
-!/media/xmlconnect/system/ok.gif
-
-/var/*
-!/var/.htaccess
-
-!/var/package
-/var/package/*
-!/var/package/*.xml
-
+# ---- OS / editor noise ------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
